@@ -86,6 +86,11 @@ def raid_5(bot, update):
                                                                resize_keyboard=True,
                                                                one_time_keyboard=True))
 
+def raid_boss(bot, update):
+    user = update.message.from_user
+    log.info('Рейд босс: {} ({})'.format(update.message.text,user.username))
+    update.message.reply_text('Босс: {}'.format(update.message.text))
+
 # определение координат
 def location(bot, update):
     user = update.message.from_user
@@ -116,6 +121,25 @@ def unknown(bot,update):
     log.info('Команда: {} ({})'.format(update.message.text,user.username))
     update.message.reply_text("Нет такой команды!")
 
+def regexp_all_boss():
+    boss_list = ''
+    for i in config.raid_one:
+        boss_list += '|' + str(i)
+        log.info(boss_list)
+    for i in config.raid_two:
+        boss_list += '|' + str(i)
+        log.info(boss_list)
+    for i in config.raid_three:
+        boss_list += '|' + str(i)
+        log.info(boss_list)
+    for i in config.raid_four:
+        boss_list += '|' + str(i)
+        log.info(boss_list)
+    for i in config.raid_leg:
+        boss_list += '|' + str(i)
+        log.info(boss_list)
+    return boss_list
+    
 
 def main():
     log.info('Бот запущен.')
@@ -132,6 +156,8 @@ def main():
     dp.add_handler(RegexHandler('^(3️⃣)$', raid_3))
     dp.add_handler(RegexHandler('^(4️⃣)$', raid_4))
     dp.add_handler(RegexHandler('^(5️⃣)$', raid_5))
+    all_boss_list = '^(' + regexp_all_boss() + ')$'
+    dp.add_handler(RegexHandler(all_boss_list, raid_boss))
     dp.add_handler(MessageHandler(Filters.location, location))
     dp.add_handler(MessageHandler(Filters.text, other))
     dp.add_handler(MessageHandler(Filters.command, unknown))
