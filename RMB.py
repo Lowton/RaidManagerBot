@@ -1,5 +1,7 @@
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler,
-                          MessageHandler, Filters)
+                          MessageHandler, Filters,
+                          RegexHandler)
 from log import log
 import config
 
@@ -18,6 +20,71 @@ def off(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
                      text="Выключаюсь…")
     updater.stop()
+
+# Заебеним динамичное меню
+def build_menu(buttons,
+               n_cols,
+               header_buttons=None,
+               footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
+
+
+def new_raid(bot, update):
+    user = update.message.from_user
+    log.info('Новый рейд ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_level,5)
+    update.message.reply_text('Какой уровень рейда?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
+
+def raid_1(bot, update):
+    user = update.message.from_user
+    log.info('Тип рейда ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_one,2)
+    update.message.reply_text('Кто босс?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
+    
+           
+def raid_2(bot, update):
+    user = update.message.from_user
+    log.info('Тип рейда ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_two,2)
+    update.message.reply_text('Кто босс?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
+def raid_3(bot, update):
+    user = update.message.from_user
+    log.info('Тип рейда ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_three,2)
+    update.message.reply_text('Кто босс?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
+def raid_4(bot, update):
+    user = update.message.from_user
+    log.info('Тип рейда ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_four,2)
+    update.message.reply_text('Кто босс?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
+def raid_5(bot, update):
+    user = update.message.from_user
+    log.info('Тип рейда ({})'.format(user.username))
+    reply_keyboard = build_menu(config.raid_leg,2)
+    update.message.reply_text('Кто босс?',
+                              reply_markup=ReplyKeyboardMarkup(reply_keyboard,
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
 
 # определение координат
 def location(bot, update):
@@ -59,6 +126,12 @@ def main():
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('off', off))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('raid', new_raid))
+    dp.add_handler(RegexHandler('^(1️⃣)$', raid_1))
+    dp.add_handler(RegexHandler('^(2️⃣)$', raid_2))
+    dp.add_handler(RegexHandler('^(3️⃣)$', raid_3))
+    dp.add_handler(RegexHandler('^(4️⃣)$', raid_4))
+    dp.add_handler(RegexHandler('^(5️⃣)$', raid_5))
     dp.add_handler(MessageHandler(Filters.location, location))
     dp.add_handler(MessageHandler(Filters.text, other))
     dp.add_handler(MessageHandler(Filters.command, unknown))
