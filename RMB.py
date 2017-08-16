@@ -1,4 +1,4 @@
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton)
 from telegram.ext import (Updater, CommandHandler,
                           MessageHandler, Filters,
                           RegexHandler)
@@ -89,7 +89,11 @@ def raid_5(bot, update):
 def raid_boss(bot, update):
     user = update.message.from_user
     log.info('Рейд босс: {} ({})'.format(update.message.text,user.username))
-    update.message.reply_text('Босс: {}'.format(update.message.text))
+    update.message.reply_text('Босс: {}\nОтправьте местоположение стадиона с рейдом.'.format(update.message.text),
+                              reply_markup=ReplyKeyboardMarkup([[KeyboardButton(text="Отправить местоположение",
+                                                                                request_location=True)]],
+                                                               resize_keyboard=True,
+                                                               one_time_keyboard=True))
 
 # определение координат
 def location(bot, update):
@@ -125,19 +129,19 @@ def regexp_all_boss():
     boss_list = ''
     for i in config.raid_one:
         boss_list += '|' + str(i)
-        log.info(boss_list)
     for i in config.raid_two:
         boss_list += '|' + str(i)
-        log.info(boss_list)
     for i in config.raid_three:
         boss_list += '|' + str(i)
-        log.info(boss_list)
     for i in config.raid_four:
         boss_list += '|' + str(i)
-        log.info(boss_list)
     for i in config.raid_leg:
         boss_list += '|' + str(i)
-        log.info(boss_list)
+
+    # отрезаем лишний |
+    boss_list = boss_list[1:len(boss_list)]
+    log.info(boss_list)        
+
     return boss_list
     
 
